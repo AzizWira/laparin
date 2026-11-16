@@ -7,7 +7,10 @@
     --line: #b1baad;
     font-family: "DM Sans", "Segoe UI", sans-serif;
     color: var(--ink);
-    background: var(--paper);
+    background-color: var(--paper);
+    background-image:
+        repeating-linear-gradient(45deg, transparent 0 13px, #52674713 13px 14px, transparent 14px 28px),
+        repeating-linear-gradient(-45deg, transparent 0 13px, #52674713 13px 14px, transparent 14px 28px);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -102,6 +105,7 @@ h1 {
 
 .account-form, .field { display: grid; }
 .account-form { gap: 1.25rem; margin: 1.75rem 0 0; }
+.account-link { display: inline-block; margin-top: 1.2rem; color: var(--green); text-underline-offset: .2em; }
 .field { gap: .45rem; }
 .field label { font-weight: 650; }
 

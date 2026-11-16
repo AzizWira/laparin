@@ -38,6 +38,7 @@
 
                 <button class="button button--primary" type="submit">Masuk</button>
             </form>
+            <a class="account-link" href="{{ route('home') }}">Kembali ke katalog</a>
         </section>
     </main>
 @endsection

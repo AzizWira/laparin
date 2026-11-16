@@ -18,16 +18,25 @@ class DemoAccountSeeder extends Seeder
         }
 
         $accounts = DB::transaction(function (): array {
-            $tenant = Tenant::query()->firstOrCreate(
-                ['slug' => 'kedai-ayam-rasa'],
-                ['name' => 'Kedai Ayam Rasa'],
-            );
-
-            return [
+            $accounts = [
                 $this->createAccount('Admin Laparin', 'admin@laparin.test', UserRole::Admin),
-                $this->createAccount('Kedai Ayam Rasa', 'tenant@laparin.test', UserRole::Tenant, $tenant),
                 $this->createAccount('Pelanggan Laparin', 'pelanggan@laparin.test', UserRole::Pelanggan),
             ];
+
+            $demoTenants = [
+                'kedai-ayam-rasa' => ['Kedai Ayam Rasa', 'tenant@laparin.test'],
+                'mangkuk-sore' => ['Mangkuk Sore', 'tenant.mangkuk@laparin.test'],
+            ];
+
+            foreach ($demoTenants as $slug => [$name, $email]) {
+                $tenant = Tenant::withTrashed()->firstOrCreate(['slug' => $slug], ['name' => $name]);
+
+                if (! $tenant->trashed()) {
+                    $accounts[] = $this->createAccount($name, $email, UserRole::Tenant, $tenant);
+                }
+            }
+
+            return $accounts;
         });
 
         $this->command?->table(['Role', 'Email demo', 'Kata sandi lokal'], $accounts);
