@@ -57,17 +57,16 @@ function Invoke-WithDockerHub([scriptblock] $Operation) {
 
     New-Item -ItemType Directory -Path $configPath | Out-Null
     try {
-        # The registry entry prevents Docker from selecting the shared Windows credential helper.
-        '{"auths":{"https://index.docker.io/v1/":{}}}' |
+        # Use a per-stage registry config so the shared Docker Desktop login is never used.
+        $registryAuth = [Convert]::ToBase64String(
+            [Text.Encoding]::UTF8.GetBytes("${env:DOCKERHUB_USER}:${env:DOCKERHUB_PAT}")
+        )
+        @{ auths = @{ 'https://index.docker.io/v1/' = @{ auth = $registryAuth } } } |
+            ConvertTo-Json -Depth 4 -Compress |
             Set-Content -LiteralPath (Join-Path $configPath 'config.json') -Encoding ASCII
         $env:DOCKER_CONFIG = $configPath
         $env:DOCKER_HOST = $endpoint
         $env:DOCKER_CONTEXT = $null
-
-        $env:DOCKERHUB_PAT | & docker login --username $env:DOCKERHUB_USER --password-stdin
-        if ($LASTEXITCODE -ne 0) {
-            throw 'Login Docker Hub gagal. Periksa username dan PAT di Jenkins Credentials.'
-        }
 
         & $Operation
     } finally {
