@@ -14,6 +14,9 @@
     @if (session('status'))
         <p class="notice" role="status">{{ session('status') }}</p>
     @endif
+    @error('tenant')
+        <p class="notice notice--error" role="alert">{{ $message }}</p>
+    @enderror
 
     <ul class="manage-list" aria-label="Tenant aktif">
         @forelse ($tenants as $tenant)

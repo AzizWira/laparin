@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\AdminTenantController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TenantMenuController;
+use App\Http\Controllers\TenantOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('menu', '[0-9]+');
+Route::pattern('code', '[0-9A-HJKMNP-TV-Z]{26}');
 
 Route::get('/', [CatalogController::class, 'index'])->name('home');
 Route::get('/gerai/{tenant:slug}', [CatalogController::class, 'show'])->name('catalog.tenant');
@@ -35,10 +39,22 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/', [TenantMenuController::class, 'index'])->name('dashboard.tenant');
         Route::resource('menu', TenantMenuController::class)->except(['index', 'show'])->names('tenant.menu');
         Route::patch('/menu/{menu}/stok', [TenantMenuController::class, 'updateStock'])->name('tenant.menu.stock');
+        Route::get('/pesanan', [TenantOrderController::class, 'index'])->name('tenant.orders.index');
+        Route::get('/pesanan/{code}', [TenantOrderController::class, 'show'])->name('tenant.orders.show');
+        Route::patch('/pesanan/{code}/status', [TenantOrderController::class, 'update'])->name('tenant.orders.update');
     });
 
-    Route::view('/pelanggan', 'dashboard', [
-        'heading' => 'Pelanggan',
-        'summary' => 'Tempat memesan makanan dan memantau pesananmu.',
-    ])->middleware('role:pelanggan')->name('dashboard.pelanggan');
+    Route::middleware('role:pelanggan')->group(function (): void {
+        Route::get('/pelanggan', [CustomerOrderController::class, 'index'])->name('dashboard.pelanggan');
+        Route::get('/pesanan/{code}', [CustomerOrderController::class, 'show'])->name('orders.show');
+
+        Route::prefix('keranjang')->name('cart.')->group(function (): void {
+            Route::get('/', [CartController::class, 'index'])->block()->name('index');
+            Route::post('/menu/{menu}', [CartController::class, 'add'])->block()->name('add');
+            Route::patch('/menu/{menu}', [CartController::class, 'update'])->block()->name('update');
+            Route::delete('/menu/{menu}', [CartController::class, 'remove'])->block()->name('remove');
+            Route::delete('/', [CartController::class, 'clear'])->block()->name('clear');
+            Route::post('/checkout', [CartController::class, 'checkout'])->block()->name('checkout');
+        });
+    });
 });

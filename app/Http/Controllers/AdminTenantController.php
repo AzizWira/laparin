@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Models\Tenant;
 use App\Support\CatalogPhoto;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AdminTenantController extends Controller
@@ -44,7 +47,15 @@ class AdminTenantController extends Controller
 
     public function destroy(Tenant $tenant): RedirectResponse
     {
-        $tenant->delete();
+        DB::transaction(function () use ($tenant): void {
+            $locked = Tenant::query()->whereKey($tenant->id)->lockForUpdate()->firstOrFail();
+            $hasOpenOrders = $locked->orders()->whereNotIn('status', [OrderStatus::Selesai->value, OrderStatus::Dibatalkan->value])->exists();
+            if ($hasOpenOrders) {
+                throw ValidationException::withMessages(['tenant' => 'Selesaikan pesanan aktif sebelum mengarsipkan tenant ini.']);
+            }
+
+            $locked->delete();
+        }, attempts: 3);
 
         return to_route('dashboard.admin')->with('status', 'Tenant sudah diarsipkan.');
     }

@@ -2,6 +2,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/catalog.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/orders.css') }}">
 @endpush
 
 @section('content')
@@ -14,7 +15,12 @@
             </a>
             <div class="site-bar__actions">
                 @auth
-                    <a class="site-bar__link" href="{{ route('dashboard') }}">Dasbor</a>
+                    @if (auth()->user()->role === \App\Enums\UserRole::Pelanggan)
+                        <a class="site-bar__link" href="{{ route('dashboard.pelanggan') }}">Pesanan</a>
+                        <a class="site-bar__link" href="{{ route('cart.index') }}">Keranjang</a>
+                    @else
+                        <a class="site-bar__link" href="{{ route('dashboard') }}">Dasbor</a>
+                    @endif
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
                         <button class="button button--outline" type="submit">Keluar</button>
