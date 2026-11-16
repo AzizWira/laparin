@@ -17,6 +17,10 @@
 
             <form action="{{ route('login.store') }}" method="post" class="account-form">
                 @csrf
+                @php($returnTenant = old('return_tenant', request()->query('gerai')))
+                @if (is_string($returnTenant))
+                    <input type="hidden" name="return_tenant" value="{{ $returnTenant }}">
+                @endif
                 <div class="field">
                     <label for="email">Email</label>
                     <input id="email" name="email" type="email" value="{{ old('email') }}"

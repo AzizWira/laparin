@@ -19,7 +19,13 @@
     </section>
 
     <section class="catalog-section" aria-labelledby="menu-title">
-        <h2 id="menu-title">Menu hari ini</h2>
+        <div class="section-heading">
+            <h2 id="menu-title">Menu hari ini</h2>
+            @guest
+                <a class="button button--outline" href="{{ route('login', ['gerai' => $tenant->slug]) }}">Masuk untuk memesan</a>
+            @endguest
+        </div>
+        <x-orders.feedback />
         <div class="menu-grid">
             @forelse ($menu as $item)
                 @php($available = ($item->todayStock?->remaining ?? 0) > 0)
@@ -33,7 +39,18 @@
                         @if ($item->description)
                             <p>{{ $item->description }}</p>
                         @endif
-                        <strong class="item-price">Rp{{ number_format($item->price, 0, ',', '.') }}</strong>
+                        <div class="menu-card__purchase">
+                            <strong class="item-price">Rp{{ number_format($item->price, 0, ',', '.') }}</strong>
+                            @auth
+                                @if (auth()->user()->role === \App\Enums\UserRole::Pelanggan)
+                                    <form method="post" action="{{ route('cart.add', $item) }}">
+                                        @csrf
+                                        <button class="button button--primary" type="submit" @disabled(! $available)
+                                            aria-label="Tambah {{ $item->name }} ke keranjang">Tambah</button>
+                                    </form>
+                                @endif
+                            @endauth
+                        </div>
                     </div>
                 </article>
             @empty

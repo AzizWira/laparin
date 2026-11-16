@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
+use App\Models\Tenant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,6 +46,13 @@ class SessionController extends Controller
 
         RateLimiter::clear($key);
         $request->session()->regenerate();
+
+        $returnTenant = $request->input('return_tenant');
+        if ($request->user()->role === UserRole::Pelanggan
+            && is_string($returnTenant) && strlen($returnTenant) <= 128
+            && Tenant::query()->where('slug', $returnTenant)->exists()) {
+            return to_route('catalog.tenant', ['tenant' => $returnTenant]);
+        }
 
         return redirect()->route('dashboard');
     }

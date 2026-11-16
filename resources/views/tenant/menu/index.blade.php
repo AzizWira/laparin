@@ -9,7 +9,10 @@
             <h1>Kelola menu</h1>
             <p>Stok porsi untuk {{ now('Asia/Jakarta')->translatedFormat('j F Y') }}.</p>
         </div>
-        <a class="button button--primary" href="{{ route('tenant.menu.create') }}">Tambah menu</a>
+        <div class="order-actions">
+            <a class="button button--outline" href="{{ route('tenant.orders.index') }}">Lihat pesanan</a>
+            <a class="button button--primary" href="{{ route('tenant.menu.create') }}">Tambah menu</a>
+        </div>
     </div>
 
     @if (session('status'))
