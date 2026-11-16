@@ -1,10 +1,19 @@
 <?php
 
+use App\Http\Controllers\AdminTenantController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\TenantMenuController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/login')->name('home');
+Route::pattern('menu', '[0-9]+');
+
+Route::get('/', [CatalogController::class, 'index'])->name('home');
+Route::get('/gerai/{tenant:slug}', [CatalogController::class, 'show'])->name('catalog.tenant');
+Route::get('/foto-katalog/{filename}', [CatalogController::class, 'photo'])
+    ->where('filename', '[a-zA-Z0-9]+\.(jpg|jpeg|png|webp)')
+    ->name('catalog.photo');
 
 Route::middleware('guest')->group(function (): void {
     Route::view('/login', 'auth.login')->name('login');
@@ -17,21 +26,16 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', fn (Request $request) => to_route('dashboard.'.$request->user()->role->value))
         ->name('dashboard');
 
-    Route::view('/admin', 'dashboard', [
-        'heading' => 'Admin',
-        'summary' => 'Kelola tenant dan akun mereka dari sini.',
-    ])->middleware('role:admin')->name('dashboard.admin');
+    Route::prefix('admin')->middleware('role:admin')->group(function (): void {
+        Route::get('/', [AdminTenantController::class, 'index'])->name('dashboard.admin');
+        Route::resource('tenant', AdminTenantController::class)->except(['index', 'show'])->names('admin.tenants');
+    });
 
-    Route::get('/tenant', function (Request $request) {
-        $tenant = $request->user()->tenant;
-
-        abort_if($tenant === null, 403, 'Akun ini belum terhubung ke tenant.');
-
-        return view('dashboard', [
-            'heading' => $tenant->name,
-            'summary' => 'Ruang kerja untuk menu, stok porsi, dan pesanan gerai ini.',
-        ]);
-    })->middleware('role:tenant')->name('dashboard.tenant');
+    Route::prefix('tenant')->middleware('role:tenant')->group(function (): void {
+        Route::get('/', [TenantMenuController::class, 'index'])->name('dashboard.tenant');
+        Route::resource('menu', TenantMenuController::class)->except(['index', 'show'])->names('tenant.menu');
+        Route::patch('/menu/{menu}/stok', [TenantMenuController::class, 'updateStock'])->name('tenant.menu.stock');
+    });
 
     Route::view('/pelanggan', 'dashboard', [
         'heading' => 'Pelanggan',

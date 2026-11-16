@@ -18,5 +18,6 @@
         <p class="dashboard__welcome">Halo, {{ auth()->user()->name }}.</p>
         <h1>{{ $heading }}</h1>
         <p>{{ $summary }}</p>
+        <a class="account-link" href="{{ route('home') }}">Jelajahi tenant</a>
     </main>
 @endsection
