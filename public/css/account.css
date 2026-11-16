@@ -1,0 +1,169 @@
+:root {
+    color-scheme: light;
+    --paper: #f6f0e5;
+    --ink: #152d22;
+    --green: #234a36;
+    --pale: #deedb1;
+    --line: #b1baad;
+    font-family: "DM Sans", "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+button, input { font: inherit; }
+
+.sign-in {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, .85fr);
+    width: min(68rem, calc(100% - 4rem));
+    margin: clamp(2rem, 9vw, 8rem) auto;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    background: #fffdf8;
+    box-shadow: 0 1rem 3rem #233c2714;
+}
+
+.sign-in__intro {
+    display: flex;
+    min-height: 27rem;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: clamp(2rem, 5vw, 4rem);
+    color: var(--pale);
+    background: var(--green);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+    width: fit-content;
+    color: inherit;
+    font-size: 1.15rem;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.brand-mark {
+    position: relative;
+    display: inline-block;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    border-radius: .7rem;
+    color: var(--ink);
+    background: var(--pale);
+}
+
+.brand-mark__steam {
+    position: absolute;
+    top: .38rem;
+    left: 1.02rem;
+    width: .16rem;
+    height: .47rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: -.3rem .14rem currentColor, .3rem .14rem currentColor;
+    transform: rotate(19deg);
+}
+
+.brand-mark__bowl {
+    position: absolute;
+    inset: 1.05rem .42rem .43rem;
+    border: .12rem solid;
+    border-radius: .15rem .15rem .65rem .65rem;
+}
+
+.sign-in__display {
+    margin: 0;
+    font-family: "DM Serif Text", Georgia, serif;
+    font-size: clamp(2.65rem, 5vw, 4.7rem);
+    font-weight: 400;
+    letter-spacing: -.05em;
+    line-height: 1.05;
+}
+
+.sign-in__panel {
+    align-self: center;
+    padding: clamp(2rem, 5vw, 4rem);
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(1.85rem, 3vw, 2.7rem);
+    letter-spacing: -.04em;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.account-form, .field { display: grid; }
+.account-form { gap: 1.25rem; margin: 1.75rem 0 0; }
+.field { gap: .45rem; }
+.field label { font-weight: 650; }
+
+.field input {
+    width: 100%;
+    min-height: 3rem;
+    padding: .6rem .8rem;
+    border: 1px solid var(--line);
+    border-radius: .55rem;
+    color: var(--ink);
+    background: white;
+}
+
+.field [aria-invalid="true"] { border-color: #a62b27; }
+.field__error { margin: 0; color: #862925; line-height: 1.35; }
+
+.button {
+    min-height: 2.75rem;
+    padding: .65rem 1rem;
+    border: 1px solid transparent;
+    border-radius: .55rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.button--primary { color: white; background: var(--green); }
+.button--primary:hover { background: var(--ink); }
+.button--outline { border-color: var(--line); color: var(--ink); background: #fffdf8; }
+.button--outline:hover { background: var(--pale); }
+:focus-visible { outline: 3px solid #28734a; outline-offset: 3px; }
+
+.account-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .9rem clamp(1rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--line);
+    background: #fffdf8;
+}
+
+.dashboard {
+    width: min(58rem, calc(100% - 2rem));
+    margin: clamp(2rem, 7vw, 6rem) auto;
+    padding: clamp(1.5rem, 5vw, 4rem);
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    background: #fffdf8;
+}
+
+.dashboard__welcome { margin: 0 0 .6rem; font-weight: 650; }
+.dashboard p:last-child { margin-bottom: 0; }
+
+@media (max-width: 45rem) {
+    .sign-in { grid-template-columns: minmax(0, 1fr); width: calc(100% - 2rem); }
+    .sign-in__intro { min-height: auto; gap: 1.35rem; padding: 1.5rem; }
+    .sign-in__display { font-size: clamp(2rem, 7vw, 2.9rem); }
+    .sign-in__display br { display: none; }
+    .sign-in__panel { padding: 1.5rem; }
+}
+
+@media (max-width: 24rem) {
+    .sign-in { margin-block: 1rem; }
+    .sign-in__intro, .sign-in__panel { padding: 1.25rem; }
+}
